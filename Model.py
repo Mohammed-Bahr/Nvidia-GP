@@ -63,10 +63,19 @@ result = pipe(
 )
 
 # ==========================================
-# Output
+# Output the transcript for testing
 # ==========================================
 
 transcript = result["text"]
 
 print("\n========== Transcript ==========\n")
 print(transcript)
+
+
+# ==========================================
+# Save the transcript to a text file
+# ==========================================
+with open("transcript.txt", "w", encoding="utf-8") as f:
+    f.write(transcript)
+    
+    
