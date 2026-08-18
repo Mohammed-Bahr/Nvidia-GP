@@ -2,3 +2,5 @@ dataset
 TEST
 whisper_finetuned/
 core.42257
+__pycache__/
+Attachments/

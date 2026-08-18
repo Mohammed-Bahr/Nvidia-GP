@@ -1,0 +1,38 @@
+openai-whisper
+torch
+sounddevice
+numpy
+evdev
+
+
+
+[main] raw transcript: اسلام عليكم ورحمة الله وبركاته.
+[formatter] Ollama unavailable/failed (<urlopen error [Errno 111] Connection refused>), using raw transcript instead
+[main] final transcript: اسلام عليكم ورحمة الله وبركاته.
+[typer] ydotool not found. Install it with: sudo dnf install ydotool
+[typer] Transcribed text (not typed, printed instead):
+اسلام عليكم ورحمة الله وبركاته.
+^Z
+[2]+  Stopped
+
+
+[main] raw transcript: إنها تجربة حسنا للبروجد باللغة العربية
+[formatter] Ollama unavailable/failed (<urlopen error [Errno 111] Connection refused>), using raw transcript instead
+[main] final transcript: إنها تجربة حسنا للبروجد باللغة العربية
+[typer] ydotool not found. Install it with: sudo dnf install ydotool
+[typer] Transcribed text (not typed, printed instead):
+إنها تجربة حسنا للبروجد باللغة العربية
+
+
+AWF_WHISPER_MODEL=small python main.py
+[main] loading Whisper model, this can take a while on first run...
+[transcriber] loading whisper 'small' on cuda ...
+[transcriber] ready on cuda
+[main] Ready. Hold 'KEY_F8' to talk, release to transcribe & type.
+[main] Press Ctrl+C in this terminal to quit.
+[main] raw transcript: تقربت أولي البروجكت وربت كنك
+[formatter] Ollama unavailable/failed (HTTP Error 404: Not Found), using raw transcript instead
+[main] final transcript: تقربت أولي البروجكت وربت كنك
+[typer] ydotool not found. Install it with: sudo dnf install ydotool
+[typer] Transcribed text (not typed, printed instead):
+تقربت أولي البروجكت وربت كنك
