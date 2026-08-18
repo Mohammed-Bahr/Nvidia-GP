@@ -9,6 +9,8 @@ Requires:
     sudo dnf install ydotool
     sudo systemctl enable --now ydotool     # starts the ydotoold daemon
 """
+
+import os
 import shutil
 import subprocess
 
@@ -24,8 +26,16 @@ def type_text(text: str):
         print(f"[typer] Transcribed text (not typed, printed instead):\n{text}")
         return
 
+    socket_path = os.environ.get(
+        "YDOTOOL_SOCKET", f"/run/user/{os.getuid()}/.ydotool_socket"
+    )
+    if not os.path.exists(socket_path):
+        print("[typer] ydotool socket not found. Is ydotoold running?")
+        print("[typer] Try: sudo systemctl enable --now ydotool")
+        print(f"[typer] Transcribed text (not typed, printed instead):\n{text}")
+        return
+
     try:
-        # '--' guards against text that starts with '-' being parsed as a flag
         subprocess.run(["ydotool", "type", "--", text], check=True)
     except subprocess.CalledProcessError as e:
         print(f"[typer] ydotool failed ({e}). Is ydotoold running?")

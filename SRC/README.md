@@ -1,7 +1,7 @@
 # Arabic Whisper Flow
 
 Push-to-talk Arabic dictation: hold a hotkey, speak, release — Whisper
-transcribes it, a local LLM cleans up punctuation/organization, and the
+transcribes it, a local mT5 model cleans up punctuation/organization, and the
 result gets typed wherever your cursor is. A small overlay at the bottom
 of the screen shows recording/processing state.
 
@@ -9,14 +9,14 @@ of the screen shows recording/processing state.
 
 ```
 hotkey held  → recorder.py captures mic audio
-hotkey up    → transcriber.py runs Whisper large (torch, no fine-tuning)
-             → formatter.py cleans the raw text with a local mT5 model
-               (punctuation/spacing/sentence breaks, no added content)
+hotkey up    → transcriber.py runs the fine-tuned Whisper model
+             → formatter.py runs a local mT5 model to fix
+               punctuation/spacing/sentence breaks only
              → typer_out.py types the final text at the cursor via ydotool
 gui.py       → shows a small bar at the bottom of the screen throughout
 ```
 
-## One-time setup (Fedora 43)
+## One-time setup (Fedora)
 
 ### 1. System packages
 ```bash
@@ -63,20 +63,27 @@ different one, and `AWF_FORMATTER_DEVICE=cuda` to run it on the GPU
 
 ## Running it
 ```bash
-source .venv/bin/activate
+./setup.sh
+```
+or manually:
+```bash
+source ../.venv-1/bin/activate
 python main.py
 ```
-First run will download the Whisper model (large-v3 is ~3GB) — this
-only happens once.
+First run downloads the fine-tuned Whisper checkpoint
+(`../whisper_finetuned/model.pt`) and the mT5 cleanup model — this only
+happens once.
 
-Hold **Right Alt** (default) anywhere on your system, speak in Arabic,
+Hold **F8** (default) anywhere on your system, speak in Arabic,
 release. The text appears wherever your cursor currently is.
 
 ## Important: your GPU has 6GB VRAM
 
-`large-v3` in fp16 wants roughly 10GB. On a 3060, it may fail to load
-on GPU — if that happens, `transcriber.py` **automatically falls back
-to CPU** so it still works, just slower. Options if you want GPU speed:
+The default model is the fine-tuned whisper-small
+(`../whisper_finetuned/model.pt`), which fits comfortably on the 3060.
+If you override it to `large-v3` in fp16 it wants ~10GB — the app
+**automatically falls back to CPU** so it still works, just slower.
+Lighter options if you want GPU speed:
 
 ```bash
 AWF_WHISPER_MODEL=large-v3-turbo python main.py   # ~6GB, fits comfortably
@@ -84,13 +91,11 @@ AWF_WHISPER_MODEL=large-v3-turbo python main.py   # ~6GB, fits comfortably
 AWF_WHISPER_MODEL=medium python main.py           # smaller still, faster
 ```
 
-Both stay well within "Whisper via torch, no fine-tuning" — just a
-smaller checkpoint size.
-
 ## Configuration
 All of this is in `config.py`, overridable via `AWF_*` env vars:
-- `AWF_HOTKEY` — evdev key name (default `KEY_RIGHTALT`)
-- `AWF_WHISPER_MODEL` — `large-v3`, `large-v3-turbo`, `medium`, etc.
+- `AWF_HOTKEY` — evdev key name (default `KEY_F8`)
+- `AWF_WHISPER_MODEL` — path to a `.pt` checkpoint (default: the fine-tuned
+  `whisper_finetuned/model.pt`), or a stock name like `large-v3`, `medium`, etc.
 - `AWF_MT5_MODEL`, `AWF_FORMATTER_DEVICE`
 - `AWF_SKIP_CLEANUP=1` — type the raw Whisper output directly, skip the cleanup pass
 - `AWF_KEYBOARD_DEVICE` — force a specific `/dev/input/eventX` if auto-detect picks wrong

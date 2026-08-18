@@ -6,17 +6,10 @@ never add, remove, or reinterpret content -- only clean it up.
 If the model can't be loaded or errors, we fall back to the raw transcript
 so the app never just does nothing.
 """
-import os
-
 import config
 
-# Point this at any local/dir mT5 checkpoint (or a fine-tuned one).
-# Overridable with AWF_MT5_MODEL, e.g. google/mt5-base.
-MT5_MODEL = os.environ.get("AWF_MT5_MODEL", "csebuetnlp/mT5_multilingual_XLSum")
-
-# CPU by default so it never competes with Whisper's GPU memory;
-# use AWF_FORMATTER_DEVICE=cuda to force the GPU.
-FORMATTER_DEVICE = int(os.environ.get("AWF_FORMATTER_DEVICE", "-1"))
+MT5_MODEL = config.MT5_MODEL
+FORMATTER_DEVICE = config.FORMATTER_DEVICE
 
 print(f"[formatter] Loading mT5 ({MT5_MODEL}) on device {FORMATTER_DEVICE}...")
 _pipe = None

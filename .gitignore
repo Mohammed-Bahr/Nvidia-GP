@@ -4,3 +4,11 @@ whisper_finetuned/
 core.42257
 __pycache__/
 Attachments/
+Backup/
+.gitignore
+101.wav
+MainFiles/
+.venv/
+.venv-1/
+.claude/
+

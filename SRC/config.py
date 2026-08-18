@@ -31,14 +31,17 @@ WHISPER_MODEL = os.environ.get("AWF_WHISPER_MODEL", _FINETUNED_PT)
 WHISPER_LANGUAGE = "ar"
 
 # ---------------------------------------------------------------------------
-# Local LLM (via Ollama) used only to fix punctuation/spacing/sentence
-# breaks in the raw transcript -- it must not add or remove information.
-# Point this at whatever model you already have pulled.
+# Cleanup (second pass) -- local mT5 model used only to fix
+# punctuation/spacing/sentence breaks in the raw transcript; it must not add
+# or remove information. Override with AWF_MT5_MODEL.
 # ---------------------------------------------------------------------------
-OLLAMA_MODEL = os.environ.get("AWF_OLLAMA_MODEL", "gemma3:12b")
-OLLAMA_HOST = os.environ.get("AWF_OLLAMA_HOST", "http://localhost:11434")
-# If Ollama is down or errors out, the raw Whisper transcript is typed
-# instead of failing the whole action.
+MT5_MODEL = os.environ.get("AWF_MT5_MODEL", "csebuetnlp/mT5_multilingual_XLSum")
+# Pipeline device: -1 = CPU, 0 = first GPU. CPU by default so the cleanup
+# model never competes with Whisper's GPU memory. Use AWF_FORMATTER_DEVICE=0
+# to force GPU.
+FORMATTER_DEVICE = int(os.environ.get("AWF_FORMATTER_DEVICE", "-1"))
+# If the model can't be loaded or errors out, the raw Whisper transcript is
+# typed instead of failing the whole action.
 SKIP_CLEANUP = os.environ.get("AWF_SKIP_CLEANUP", "0") == "1"
 
 # ---------------------------------------------------------------------------
