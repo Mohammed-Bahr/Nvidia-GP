@@ -10,8 +10,8 @@ of the screen shows recording/processing state.
 ```
 hotkey held  → recorder.py captures mic audio
 hotkey up    → transcriber.py runs Whisper large (torch, no fine-tuning)
-             → formatter.py sends the raw text to your local Ollama model
-               to fix punctuation/spacing/sentence breaks only
+             → formatter.py cleans the raw text with a local mT5 model
+               (punctuation/spacing/sentence breaks, no added content)
              → typer_out.py types the final text at the cursor via ydotool
 gui.py       → shows a small bar at the bottom of the screen throughout
 ```
@@ -55,10 +55,11 @@ for the command matching your CUDA version, e.g.:
 pip install torch --index-url https://download.pytorch.org/whl/cu121
 ```
 
-### 6. Ollama model for the cleanup pass
-Make sure Ollama is running and has a model pulled, then point
-`config.py` (or `AWF_OLLAMA_MODEL`) at it — e.g. if you have
-`gemma3:12b` already pulled, that's the default.
+### 6. mT5 model for the cleanup pass
+First run downloads `csebuetnlp/mT5_multilingual_XLSum` (a few hundred MB)
+from Hugging Face. Point `AWF_MT5_MODEL` at any mT5 checkpoint to use a
+different one, and `AWF_FORMATTER_DEVICE=cuda` to run it on the GPU
+(defaults to CPU so it doesn't fight Whisper for VRAM).
 
 ## Running it
 ```bash
@@ -90,8 +91,8 @@ smaller checkpoint size.
 All of this is in `config.py`, overridable via `AWF_*` env vars:
 - `AWF_HOTKEY` — evdev key name (default `KEY_RIGHTALT`)
 - `AWF_WHISPER_MODEL` — `large-v3`, `large-v3-turbo`, `medium`, etc.
-- `AWF_OLLAMA_MODEL`, `AWF_OLLAMA_HOST`
-- `AWF_SKIP_CLEANUP=1` — type the raw Whisper output directly, skip the LLM pass
+- `AWF_MT5_MODEL`, `AWF_FORMATTER_DEVICE`
+- `AWF_SKIP_CLEANUP=1` — type the raw Whisper output directly, skip the cleanup pass
 - `AWF_KEYBOARD_DEVICE` — force a specific `/dev/input/eventX` if auto-detect picks wrong
 
 ## Troubleshooting
